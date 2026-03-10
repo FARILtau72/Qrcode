@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root { 
+      --primary: #2563eb; 
+      --bg: #f1f5f9; 
+      --text: #1e293b; 
+      --card-bg: #ffffff;
+    }
+    
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      padding: 20px; 
+      display: flex; 
+      justify-content: center; 
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .card { 
+      background: var(--card-bg); 
+      width: 100%; 
+      max-width: 450px; 
+      padding: 30px; 
+      border-radius: 24px; 
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+      text-align: center; 
+      align-self: center;
+    }
+
+    /* Logo Styling */
+    .logo-wrapper {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 20px auto;
+      background: #000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid var(--primary);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .logo-wrapper img {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+    }
+
+    h2 { margin: 0; font-size: 22px; font-weight: 600; color: var(--text); }
+    .sub-title { font-size: 13px; color: #64748b; margin-bottom: 20px; display: block; }
+
+    .nav { 
+      display: flex; 
+      gap: 8px; 
+      margin-bottom: 25px; 
+      background: #f8fafc; 
+      padding: 6px; 
+      border-radius: 14px; 
+      border: 1px solid #e2e8f0;
+    }
+
+    .nav button { 
+      flex: 1; 
+      padding: 10px; 
+      border: none; 
+      background: none; 
+      cursor: pointer; 
+      border-radius: 10px; 
+      font-weight: 600; 
+      color: #64748b; 
+      transition: all 0.2s;
+    }
+
+    .nav button.active { 
+      background: white; 
+      color: var(--primary); 
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+    }
+
+    .form-group { text-align: left; margin-bottom: 15px; }
+    label { font-size: 11px; font-weight: 600; color: #64748b; margin-left: 4px; text-transform: uppercase; }
+    
+    input, select { 
+      width: 100%; 
+      padding: 14px; 
+      margin-top: 6px; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 12px; 
+      box-sizing: border-box; 
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus { border-color: var(--primary); }
+
+    .btn { 
+      width: 100%; 
+      padding: 16px; 
+      background: var(--primary); 
+      color: white; 
+      border: none; 
+      border-radius: 12px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      margin-top: 10px; 
+      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .table-container { 
+      max-height: 350px; 
+      overflow-y: auto; 
+      margin-top: 10px; 
+      border-radius: 12px; 
+      border: 1px solid #e2e8f0; 
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: #f8fafc; padding: 12px; text-align: left; position: sticky; top: 0; color: #64748b; }
+    td { padding: 12px; border-top: 1px solid #e2e8f0; text-align: left; }
+    
+    /* Search Bar in Database */
+    #search-box {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- Logo Section -->
+  <div class="logo-wrapper">
+    <img src="https://image2url.com/r2/default/images/1772620964950-3eeff6f7-9c01-4aee-8c14-0d90f419c25f.png" 
+         onerror="this.src='https://ui-avatars.com/api/?name=TB&background=000&color=fff'" 
+         alt="Logo SMK Taruna Bangsa">
+  </div>
+
+  <h2>SMK TARUNA BANGSA</h2>
+  <span class="sub-title">Sistem Registrasi & Presensi Terpadu</span>
+
+  <div class="nav">
+    <button id="t1" class="active" onclick="tab('in')">REGISTRASI</button>
+    <button id="t2" onclick="tab('ad')">DATA SISWA</button>
+  </div>
+
+  <!-- Form Section -->
+  <div id="p-in">
+    <div class="form-group">
+      <label>NISN / ID SISWA</label>
+      <input type="text" id="id" placeholder="Contoh: 202611001">
+    </div>
+    <div class="form-group">
+      <label>NAMA LENGKAP</label>
+      <input type="text" id="nama" placeholder="Masukkan nama sesuai ijazah">
+    </div>
+    <div class="form-group">
+      <label>KELAS</label>
+      <select id="kelas">
+        <option value="X-RPL">X - Rekayasa Perangkat Lunak</option>
+        <option value="XI-RPL">XI - Rekayasa Perangkat Lunak</option>
+        <option value="XII-RPL">XII - Rekayasa Perangkat Lunak</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>EMAIL AKTIF</label>
+      <input type="email" id="email" placeholder="siswa@gmail.com">
+    </div>
+    <button class="btn" onclick="simpan()">DAFTAR SEKARANG</button>
+  </div>
+
+  <!-- Database Section -->
+  <div id="p-ad" style="display:none;">
+    <input type="text" id="search-box" placeholder="Cari nama atau NISN..." onkeyup="filterTabel()">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr><th>NISN</th><th>Nama</th><th>Kelas</th></tr>
+        </thead>
+        <tbody id="list"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Fungsi Tab Switcher
+  function tab(t) {
+    document.getElementById('p-in').style.display = t === 'in' ? 'block' : 'none';
+    document.getElementById('p-ad').style.display = t === 'ad' ? 'block' : 'none';
+    document.getElementById('t1').className = t === 'in' ? 'active' : '';
+    document.getElementById('t2').className = t === 'ad' ? 'active' : '';
+    if(t === 'ad') muat();
+  }
+
+  // Simpan Data Siswa
+  function simpan() {
+    const data = { 
+      id: document.getElementById('id').value.trim(), 
+      nama: document.getElementById('nama').value.trim(), 
+      kelas: document.getElementById('kelas').value, 
+      email: document.getElementById('email').value.trim() 
+    };
+
+    if(!data.id || !data.nama || !data.email) {
+      return Swal.fire('Peringatan', 'Mohon isi semua data dengan benar!', 'warning');
+    }
+
+    Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    
+    google.script.run.withSuccessHandler(res => {
+      if(res.error) return Swal.fire('Gagal', res.pesan, 'error');
+      Swal.fire('Berhasil', `Siswa ${res.nama} telah terdaftar!`, 'success');
+      ['id','nama','email'].forEach(i => document.getElementById(i).value = "");
+    }).simpanSiswa(data.id, data.nama, data.kelas, data.email);
+  }
+
+  // Load Data Siswa
+  function muat() {
+    document.getElementById('list').innerHTML = "<tr><td colspan='3' style='text-align:center'>Memuat data...</td></tr>";
+    google.script.run.withSuccessHandler(data => {
+      window.masterData = data; // Simpan untuk filter
+      renderTabel(data);
+    }).ambilDataSiswa();
+  }
+
+  // Render Tabel
+  function renderTabel(data) {
+    let h = "";
+    data.forEach(r => {
+      h += `<tr><td><code>${r[0]}</code></td><td><b>${r[1]}</b></td><td>${r[2]}</td></tr>`;
+    });
+    document.getElementById('list').innerHTML = h || "<tr><td colspan='3' style='text-align:center'>Data Kosong</td></tr>";
+  }
+
+  // Filter Pencarian
+  function filterTabel() {
+    const val = document.getElementById('search-box').value.toLowerCase();
+    if(!window.masterData) return;
+    const filtered = window.masterData.filter(r => 
+      r[0].toString().toLowerCase().includes(val) || 
+      r[1].toString().toLowerCase().includes(val)
+    );
+    renderTabel(filtered);
+  }
+</script>
+</body>
+</html>
