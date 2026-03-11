@@ -14,12 +14,46 @@ function doGet(e) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
+function verifyAdminPassword(password) {
+  var adminPassword = getAdminPassword_();
+  if (!adminPassword) {
+    return { error: true, pesan: "Password admin belum diatur. Buka Apps Script > Project Settings > Script Properties dan isi ADMIN_PASSWORD." };
+  }
+  if (!password || password.toString() !== adminPassword) {
+    return { error: true, pesan: "Password salah!" };
+  }
+  var token = Utilities.getUuid();
+  CacheService.getScriptCache().put(token, "1", 1800);
+  return { error: false, token: token };
+}
+
+function getAdminPassword_() {
+  return PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
+}
+
+function isAdminTokenValid_(token) {
+  if (!token) return false;
+  return CacheService.getScriptCache().get(token.toString()) === "1";
+}
+
+function normalizeNisn_(idRaw) {
+  if (idRaw === null || idRaw === undefined) return "";
+  var id = idRaw.toString().trim();
+  if (!/^\d{5,15}$/.test(id)) return "";
+  return id;
+}
+
+function isValidEmail_(email) {
+  if (!email) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toString().trim());
+}
+
 // === FUNGSI UTAMA: PROSES SCAN ABSEN ===
 function prosesAbsenAPI(idRaw) {
   const lock = LockService.getScriptLock();
   
   try {
-    var idTarget = idRaw ? idRaw.toString().trim() : "";
+    var idTarget = normalizeNisn_(idRaw);
     if (!idTarget) return pesanHtml("❌ ERROR", "QR Code Tidak Valid!", "#ef4444");
     
     lock.waitLock(15000); 
@@ -118,7 +152,14 @@ function simpanSiswa(id, nama, kelas, email) {
     lock.waitLock(15000);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = getOrCreateSheet(ss, "DataSiswa", ["NISN", "Nama", "Kelas", "Email", "QR"]);
-    var idTrim = id.toString().trim();
+    var idTrim = normalizeNisn_(id);
+    var namaTrim = nama ? nama.toString().trim() : "";
+    var kelasTrim = kelas ? kelas.toString().trim() : "";
+    var emailTrim = email ? email.toString().trim() : "";
+    if (!idTrim) return { error: true, pesan: "NISN wajib berupa angka 5-15 digit." };
+    if (!namaTrim) return { error: true, pesan: "Nama wajib diisi." };
+    if (!kelasTrim) return { error: true, pesan: "Kelas wajib diisi." };
+    if (!isValidEmail_(emailTrim)) return { error: true, pesan: "Email belum valid." };
     
     // Cek NISN Duplikat
     var data = sheet.getDataRange().getValues();
@@ -132,15 +173,15 @@ function simpanSiswa(id, nama, kelas, email) {
     var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=" + encodeURIComponent(finalUrl);
     
     // Tulis ke Sheet
-    sheet.appendRow([idTrim, nama, kelas, email, '=IMAGE("' + qrUrl + '")']);
+    sheet.appendRow([idTrim, namaTrim, kelasTrim, emailTrim, '=IMAGE("' + qrUrl + '")']);
     SpreadsheetApp.flush();
     
     // KIRIM EMAIL KARTU QR (CRITICAL FIX)
-    if (email && email.includes("@") && MailApp.getRemainingDailyQuota() > 0) {
+    if (emailTrim && MailApp.getRemainingDailyQuota() > 0) {
       try {
         MailApp.sendEmail({
-          to: email,
-          subject: "🪪 KARTU ABSENSI DIGITAL - " + nama.toUpperCase(),
+          to: emailTrim,
+          subject: "🪪 KARTU ABSENSI DIGITAL - " + namaTrim.toUpperCase(),
           htmlBody: `
             <div style="font-family: sans-serif; text-align: center; border: 2px solid #6366f1; border-radius: 20px; padding: 25px; max-width: 400px; margin: auto;">
               <h2 style="color: #6366f1; margin-bottom: 5px;">SMK TARUNA BANGSA</h2>
@@ -148,9 +189,9 @@ function simpanSiswa(id, nama, kelas, email) {
               <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
               <img src="${qrUrl}" width="220" style="border: 5px solid #f8fafc; border-radius: 15px;">
               <div style="text-align: left; margin-top: 25px; background: #f8fafc; padding: 15px; border-radius: 12px;">
-                <p style="margin: 5px 0;"><b>Nama:</b> ${nama}</p>
+                <p style="margin: 5px 0;"><b>Nama:</b> ${namaTrim}</p>
                 <p style="margin: 5px 0;"><b>NISN:</b> ${idTrim}</p>
-                <p style="margin: 5px 0;"><b>Kelas:</b> ${kelas}</p>
+                <p style="margin: 5px 0;"><b>Kelas:</b> ${kelasTrim}</p>
               </div>
               <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">Tunjukkan QR Code ini ke petugas atau scan pada alat yang tersedia untuk absensi harian.</p>
             </div>`
@@ -158,7 +199,7 @@ function simpanSiswa(id, nama, kelas, email) {
       } catch (e) { console.error("Gagal kirim kartu: " + e.message); }
     }
     
-    return {nama: nama, error: false};
+    return {nama: namaTrim, error: false};
   } catch(e) { 
     return {error: true, pesan: "Gagal daftar: " + e.toString()}; 
   } finally { 
@@ -166,10 +207,13 @@ function simpanSiswa(id, nama, kelas, email) {
   }
 }
 
-function ambilDataSiswa() {
+function ambilDataSiswa(token) {
+  if (!isAdminTokenValid_(token)) {
+    return { error: true, pesan: "Akses admin tidak valid. Silakan login kembali." };
+  }
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = getOrCreateSheet(ss, "DataSiswa", ["NISN", "Nama", "Kelas", "Email", "QR"]);
-  return sheet.getDataRange().getValues().slice(1);
+  return { error: false, data: sheet.getDataRange().getValues().slice(1) };
 }
 
 function getOrCreateSheet(ss, name, headers) {
