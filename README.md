@@ -126,10 +126,17 @@ Digunakan untuk mencatat riwayat kehadiran harian.
 🔐 4. KEAMANAN & TEKNIS
 
 Sistem ini menggunakan <b>LockService</b> untuk menangani lonjakan trafik saat pagi hari agar tidak terjadi kegagalan penulisan data di Spreadsheet.
-
+<hr>
+<h3>Nontifikasi Email Ketika Siswa masuk</h3>
 <img width="663" height="395" alt="image" src="https://github.com/user-attachments/assets/27965ef5-614d-4127-8520-b6f98f1a5611" />
+<hr>
+<h3>QR CODE Absensi Siswa </h3>
 <img width="768" height="699" alt="image" src="https://github.com/user-attachments/assets/88c97c31-1eb2-4060-8b2e-76b906f2950d" />
+<hr>
+<h3>Halaman Admin</h3>
 <img width="1074" height="940" alt="image" src="https://github.com/user-attachments/assets/44d09f5f-5861-444d-abb9-6558725fa084" />
+<hr>
+<h3>Halaman Regsiter Siswa</h3>
 <img width="1073" height="932" alt="image" src="https://github.com/user-attachments/assets/ccd751a6-ee52-4bd6-8c7d-324665cdf6e1" />
 
 
