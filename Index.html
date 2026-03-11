@@ -215,6 +215,11 @@
 </div>
 
 <script>
+  // Pastikan aturan ini konsisten dengan validasi di kode.gs.
+  const NISN_MIN_LENGTH = 5;
+  const NISN_MAX_LENGTH = 15;
+  const NISN_REGEX = new RegExp(`^\\d{${NISN_MIN_LENGTH},${NISN_MAX_LENGTH}}$`);
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   let terautentikasi = false;
   let adminToken = null;
   let masterData = [];
@@ -256,10 +261,10 @@
       kelas: document.getElementById('kelas').value, 
       email: document.getElementById('email').value.trim() 
     };
-    const nisnValid = /^\d{5,15}$/.test(data.id);
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
+    const nisnValid = NISN_REGEX.test(data.id);
+    const emailValid = EMAIL_REGEX.test(data.email);
     if (!data.id || !data.nama || !data.email) return Swal.fire('Oops', 'Isi semua data ya!', 'warning');
-    if (!nisnValid) return Swal.fire('Oops', 'NISN harus berupa angka 5-15 digit.', 'warning');
+    if (!nisnValid) return Swal.fire('Oops', `NISN harus berupa angka ${NISN_MIN_LENGTH}-${NISN_MAX_LENGTH} digit.`, 'warning');
     if (!emailValid) return Swal.fire('Oops', 'Email belum valid.', 'warning');
     Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading() });
     google.script.run.withSuccessHandler(res => {

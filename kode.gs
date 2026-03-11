@@ -4,6 +4,11 @@
  * Status: Final Fix - Kartu QR dikirim saat registrasi.
  */
 
+var NISN_MIN_LENGTH = 5;
+var NISN_MAX_LENGTH = 15;
+var TOKEN_EXPIRY_SECONDS = 1800;
+var NISN_REGEX = new RegExp("^\\d{" + NISN_MIN_LENGTH + "," + NISN_MAX_LENGTH + "}$");
+
 function doGet(e) {
   if (e.parameter.id) {
     return prosesAbsenAPI(e.parameter.id);
@@ -23,7 +28,7 @@ function verifyAdminPassword(password) {
     return { error: true, pesan: "Password salah!" };
   }
   var token = Utilities.getUuid();
-  CacheService.getScriptCache().put(token, "1", 1800);
+  CacheService.getScriptCache().put(token, "1", TOKEN_EXPIRY_SECONDS);
   return { error: false, token: token };
 }
 
@@ -39,7 +44,7 @@ function isAdminTokenValid_(token) {
 function normalizeNisn_(idRaw) {
   if (idRaw === null || idRaw === undefined) return "";
   var id = idRaw.toString().trim();
-  if (!/^\d{5,15}$/.test(id)) return "";
+  if (!NISN_REGEX.test(id)) return "";
   return id;
 }
 
@@ -156,7 +161,7 @@ function simpanSiswa(id, nama, kelas, email) {
     var namaTrim = nama ? nama.toString().trim() : "";
     var kelasTrim = kelas ? kelas.toString().trim() : "";
     var emailTrim = email ? email.toString().trim() : "";
-    if (!idTrim) return { error: true, pesan: "NISN wajib berupa angka 5-15 digit." };
+    if (!idTrim) return { error: true, pesan: "NISN wajib berupa angka " + NISN_MIN_LENGTH + "-" + NISN_MAX_LENGTH + " digit." };
     if (!namaTrim) return { error: true, pesan: "Nama wajib diisi." };
     if (!kelasTrim) return { error: true, pesan: "Kelas wajib diisi." };
     if (!isValidEmail_(emailTrim)) return { error: true, pesan: "Email belum valid." };
@@ -177,7 +182,7 @@ function simpanSiswa(id, nama, kelas, email) {
     SpreadsheetApp.flush();
     
     // KIRIM EMAIL KARTU QR (CRITICAL FIX)
-    if (emailTrim && MailApp.getRemainingDailyQuota() > 0) {
+    if (isValidEmail_(emailTrim) && MailApp.getRemainingDailyQuota() > 0) {
       try {
         MailApp.sendEmail({
           to: emailTrim,
