@@ -161,7 +161,7 @@ function simpanSiswa(id, nama, kelas, email) {
     var namaTrim = nama ? nama.toString().trim() : "";
     var kelasTrim = kelas ? kelas.toString().trim() : "";
     var emailTrim = email ? email.toString().trim() : "";
-    if (!idTrim) return { error: true, pesan: "NISN wajib berupa angka " + NISN_MIN_LENGTH + "-" + NISN_MAX_LENGTH + " digit." };
+    if (!idTrim) return { error: true, pesan: "NISN wajib diisi dan berupa angka " + NISN_MIN_LENGTH + "-" + NISN_MAX_LENGTH + " digit." };
     if (!namaTrim) return { error: true, pesan: "Nama wajib diisi." };
     if (!kelasTrim) return { error: true, pesan: "Kelas wajib diisi." };
     if (!isValidEmail_(emailTrim)) return { error: true, pesan: "Email belum valid." };
