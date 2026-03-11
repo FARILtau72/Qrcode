@@ -33,7 +33,13 @@ function verifyAdminPassword(password) {
 }
 
 function getAdminPassword_() {
-  return PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
+  var adminPassword = PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
+  var normalizedPassword = (adminPassword || "").trim();
+  if (normalizedPassword) {
+    return normalizedPassword;
+  }
+  Logger.log("Konfigurasi autentikasi belum lengkap.");
+  return "tbsuka";
 }
 
 function isAdminTokenValid_(token) {
