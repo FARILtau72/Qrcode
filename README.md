@@ -128,7 +128,5 @@ Digunakan untuk mencatat riwayat kehadiran harian.
 Sistem ini menggunakan <b>LockService</b> untuk menangani lonjakan trafik saat pagi hari agar tidak terjadi kegagalan penulisan data di Spreadsheet.
 
 <div align="center">
-<p><b>SMK TARUNA BANGSA</b></p>
-<p><i>"Digitalisasi Pendidikan, Membangun Masa Depan"</i></p>
 <p>Developer: <b>FARILtau72</b></p>
 </div>
