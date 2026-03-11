@@ -106,7 +106,7 @@ Digunakan untuk mencatat riwayat kehadiran harian.
 <ul>
 <li><b>Anti-Double Entry:</b> Siswa tidak bisa absen 2x di hari yang sama.</li>
 <li><b>Automated Mail:</b> Kartu QR dikirim langsung ke email saat pendaftaran sukses.</li>
-<li><b>Admin Dashboard:</b> Panel data terproteksi password <code>TB original 123</code>.</li>
+<li><b>Admin Dashboard:</b> Panel data terproteksi password admin (atur di Script Properties <code>ADMIN_PASSWORD</code>).</li>
 <li><b>Download Report:</b> Ekspor data ke format Excel (.xlsx) dengan satu klik.</li>
 </ul>
 </div>
@@ -118,6 +118,7 @@ Digunakan untuk mencatat riwayat kehadiran harian.
 <li>Klik menu <b>Extensions</b> > <b>Apps Script</b>.</li>
 <li>Salin kode dari <code>Code.gs</code> ke editor.</li>
 <li>Buat file HTML baru bernama <code>Index.html</code> dan salin kodenya.</li>
+<li>Buka <b>Project Settings</b> di Apps Script dan isi Script Properties dengan key <code>ADMIN_PASSWORD</code> (password admin).</li>
 <li>Klik <b>Deploy</b> > <b>New Deployment</b>.</li>
 <li>Pilih <b>Web App</b>, Execute as: <b>Me</b>, Access: <b>Anyone</b>.</li>
 <li>Salin link Web App dan sebarkan ke siswa.</li>

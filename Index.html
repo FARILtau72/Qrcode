@@ -215,11 +215,16 @@
 </div>
 
 <script>
-  let terautentikasi = false;
+  // Pastikan aturan ini konsisten dengan validasi di kode.gs.
+  const NISN_MIN_LENGTH = 5;
+  const NISN_MAX_LENGTH = 15;
+  const NISN_REGEX = new RegExp(`^\\d{${NISN_MIN_LENGTH},${NISN_MAX_LENGTH}}$`);
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let adminToken = null;
   let masterData = [];
 
   async function cekAkses() {
-    if(terautentikasi) return tab('ad');
+    if (adminToken) return tab('ad');
     const { value: password } = await Swal.fire({
       title: 'Admin Only',
       input: 'password',
@@ -227,8 +232,16 @@
       showCancelButton: true,
       confirmButtonColor: '#2563eb'
     });
-    if (password === 'TB original 123') { terautentikasi = true; tab('ad'); }
-    else if (password) { Swal.fire('Error', 'Password Salah!', 'error'); }
+    if (!password) return;
+    Swal.fire({ title: 'Memeriksa...', didOpen: () => Swal.showLoading() });
+    google.script.run.withSuccessHandler(res => {
+      if (!res || res.error) {
+        Swal.fire('Error', (res && res.pesan) || 'Password salah!', 'error');
+        return;
+      }
+      adminToken = res.token;
+      tab('ad');
+    }).verifyAdminPassword(password);
   }
 
   function tab(t) {
@@ -246,7 +259,11 @@
       kelas: document.getElementById('kelas').value, 
       email: document.getElementById('email').value.trim() 
     };
-    if(!data.id || !data.nama || !data.email) return Swal.fire('Oops', 'Isi semua data ya!', 'warning');
+    if (!data.id || !data.nama || !data.email) return Swal.fire('Oops', 'Isi semua data ya!', 'warning');
+    const nisnValid = NISN_REGEX.test(data.id);
+    const emailValid = EMAIL_REGEX.test(data.email);
+    if (!nisnValid) return Swal.fire('Oops', `NISN harus berupa angka ${NISN_MIN_LENGTH}-${NISN_MAX_LENGTH} digit.`, 'warning');
+    if (!emailValid) return Swal.fire('Oops', 'Email belum valid.', 'warning');
     Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading() });
     google.script.run.withSuccessHandler(res => {
       if(res.error) return Swal.fire('Gagal', res.pesan, 'error');
@@ -256,11 +273,22 @@
   }
 
   function muatData() {
-    google.script.run.withSuccessHandler(data => {
-      masterData = data; 
-      updateStats(data);
-      renderTabel(data);
-    }).ambilDataSiswa();
+    if (!adminToken) {
+      Swal.fire('Error', 'Silakan login admin terlebih dahulu.', 'error');
+      tab('in');
+      return;
+    }
+    google.script.run.withSuccessHandler(res => {
+      if (!res || res.error) {
+        adminToken = null;
+        Swal.fire('Error', (res && res.pesan) || 'Akses admin ditolak.', 'error');
+        tab('in');
+        return;
+      }
+      masterData = res.data; 
+      updateStats(res.data);
+      renderTabel(res.data);
+    }).ambilDataSiswa(adminToken);
   }
 
   function updateStats(data) {
