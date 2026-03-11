@@ -34,8 +34,8 @@ function verifyAdminPassword(password) {
 
 function getAdminPassword_() {
   var adminPassword = PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
-  if (adminPassword && adminPassword.toString().trim()) {
-    return adminPassword.toString().trim();
+  if (adminPassword && adminPassword.trim()) {
+    return adminPassword.trim();
   }
   return "tbsuka";
 }
