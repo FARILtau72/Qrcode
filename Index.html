@@ -220,12 +220,11 @@
   const NISN_MAX_LENGTH = 15;
   const NISN_REGEX = new RegExp(`^\\d{${NISN_MIN_LENGTH},${NISN_MAX_LENGTH}}$`);
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  let terautentikasi = false;
   let adminToken = null;
   let masterData = [];
 
   async function cekAkses() {
-    if (terautentikasi && adminToken) return tab('ad');
+    if (adminToken) return tab('ad');
     const { value: password } = await Swal.fire({
       title: 'Admin Only',
       input: 'password',
@@ -240,7 +239,6 @@
         Swal.fire('Error', (res && res.pesan) || 'Password salah!', 'error');
         return;
       }
-      terautentikasi = true;
       adminToken = res.token;
       tab('ad');
     }).verifyAdminPassword(password);
@@ -261,9 +259,9 @@
       kelas: document.getElementById('kelas').value, 
       email: document.getElementById('email').value.trim() 
     };
+    if (!data.id || !data.nama || !data.email) return Swal.fire('Oops', 'Isi semua data ya!', 'warning');
     const nisnValid = NISN_REGEX.test(data.id);
     const emailValid = EMAIL_REGEX.test(data.email);
-    if (!data.id || !data.nama || !data.email) return Swal.fire('Oops', 'Isi semua data ya!', 'warning');
     if (!nisnValid) return Swal.fire('Oops', `NISN harus berupa angka ${NISN_MIN_LENGTH}-${NISN_MAX_LENGTH} digit.`, 'warning');
     if (!emailValid) return Swal.fire('Oops', 'Email belum valid.', 'warning');
     Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading() });
@@ -275,10 +273,13 @@
   }
 
   function muatData() {
-    if (!adminToken) return;
+    if (!adminToken) {
+      Swal.fire('Error', 'Silakan login admin terlebih dahulu.', 'error');
+      tab('in');
+      return;
+    }
     google.script.run.withSuccessHandler(res => {
       if (!res || res.error) {
-        terautentikasi = false;
         adminToken = null;
         Swal.fire('Error', (res && res.pesan) || 'Akses admin ditolak.', 'error');
         tab('in');
