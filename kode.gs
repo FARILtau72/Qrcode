@@ -34,10 +34,11 @@ function verifyAdminPassword(password) {
 
 function getAdminPassword_() {
   var adminPassword = PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
-  var normalizedPassword = adminPassword ? adminPassword.trim() : "";
+  var normalizedPassword = (adminPassword || "").trim();
   if (normalizedPassword) {
     return normalizedPassword;
   }
+  Logger.log("ADMIN_PASSWORD belum diatur; menggunakan password default 'tbsuka'.");
   return "tbsuka";
 }
 
