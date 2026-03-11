@@ -38,7 +38,7 @@ function getAdminPassword_() {
   if (normalizedPassword) {
     return normalizedPassword;
   }
-  Logger.log("ADMIN_PASSWORD belum diatur; menggunakan password default.");
+  Logger.log("Konfigurasi autentikasi belum lengkap.");
   return "tbsuka";
 }
 
