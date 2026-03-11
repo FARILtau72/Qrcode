@@ -56,6 +56,7 @@ Gunakan langkah ini jika terdapat laporan ketidaksesuaian data kehadiran siswa.
 <li><b>Backup Mingguan:</b> Download file Spreadsheet ke format <code>.xlsx</code> setiap hari Jumat setelah jam sekolah selesai.</li>
 <li><b>Clear Log Berkala:</b> Jika sheet <code>LogAbsensi</code> sudah mencapai >10.000 baris, pindahkan data lama ke file Archive agar script tetap ringan saat melakukan pencarian (Anti-Double Entry).</li>
 <li><b>Update Password:</b> Ubah nilai Script Properties <code>ADMIN_PASSWORD</code> setiap semester untuk menjaga keamanan akses dashboard.</li>
+<li><b>Password Default:</b> Jika masih menggunakan password default <code>tbsuka</code>, segera ganti di Script Properties <code>ADMIN_PASSWORD</code> sebelum dibagikan ke siswa.</li>
 </ol>
 
 📈 4. LIMITASI GOOGLE SERVICES
