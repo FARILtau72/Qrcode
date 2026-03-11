@@ -4,12 +4,17 @@
   <base target="_top">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Library SheetJS untuk fitur Export ke Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     :root { 
       --primary: #2563eb; 
+      --primary-hover: #1d4ed8;
       --bg: #f1f5f9; 
       --text: #1e293b; 
       --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --success: #22c55e;
     }
     
     body { 
@@ -26,167 +31,175 @@
     .card { 
       background: var(--card-bg); 
       width: 100%; 
-      max-width: 450px; 
+      max-width: 650px; 
       padding: 30px; 
-      border-radius: 24px; 
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+      border-radius: 28px; 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); 
       text-align: center; 
       align-self: center;
     }
 
-    /* Logo Styling */
     .logo-wrapper {
-      width: 90px;
-      height: 90px;
-      margin: 0 auto 20px auto;
+      width: 70px; height: 70px;
+      margin: 0 auto 15px auto;
       background: #000;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       border: 3px solid var(--primary);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      overflow: hidden;
     }
 
-    .logo-wrapper img {
-      width: 70%;
-      height: 70%;
-      object-fit: contain;
-    }
+    .logo-wrapper img { width: 60%; height: 60%; object-fit: contain; }
 
-    h2 { margin: 0; font-size: 22px; font-weight: 600; color: var(--text); }
-    .sub-title { font-size: 13px; color: #64748b; margin-bottom: 20px; display: block; }
+    h2 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text); }
+    .sub-title { font-size: 12px; color: #64748b; margin-bottom: 20px; display: block; }
 
     .nav { 
-      display: flex; 
-      gap: 8px; 
-      margin-bottom: 25px; 
-      background: #f8fafc; 
-      padding: 6px; 
-      border-radius: 14px; 
-      border: 1px solid #e2e8f0;
+      display: flex; gap: 8px; margin-bottom: 20px; 
+      background: #f8fafc; padding: 6px; border-radius: 14px; border: 1px solid var(--border);
     }
 
     .nav button { 
-      flex: 1; 
-      padding: 10px; 
-      border: none; 
-      background: none; 
-      cursor: pointer; 
-      border-radius: 10px; 
-      font-weight: 600; 
-      color: #64748b; 
-      transition: all 0.2s;
+      flex: 1; padding: 10px; border: none; background: none; 
+      cursor: pointer; border-radius: 10px; font-weight: 600; 
+      color: #64748b; transition: all 0.2s; font-size: 12px;
     }
 
-    .nav button.active { 
-      background: white; 
-      color: var(--primary); 
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+    .nav button.active { background: white; color: var(--primary); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); }
+
+    /* Statistik Row */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
-    .form-group { text-align: left; margin-bottom: 15px; }
-    label { font-size: 11px; font-weight: 600; color: #64748b; margin-left: 4px; text-transform: uppercase; }
+    .stat-box {
+      padding: 15px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .stat-box span { display: block; font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+    .stat-box b { font-size: 18px; color: var(--primary); }
+
+    .form-group { text-align: left; margin-bottom: 12px; }
+    label { font-size: 11px; font-weight: 600; color: #64748b; margin-left: 4px; }
     
     input, select { 
-      width: 100%; 
-      padding: 14px; 
-      margin-top: 6px; 
-      border: 1px solid #e2e8f0; 
-      border-radius: 12px; 
-      box-sizing: border-box; 
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100%; padding: 12px; margin-top: 5px; 
+      border: 1px solid var(--border); border-radius: 10px; 
+      box-sizing: border-box; font-family: inherit; font-size: 14px;
     }
-
-    input:focus, select:focus { border-color: var(--primary); }
 
     .btn { 
-      width: 100%; 
-      padding: 16px; 
-      background: var(--primary); 
-      color: white; 
-      border: none; 
-      border-radius: 12px; 
-      font-weight: 600; 
-      cursor: pointer; 
-      margin-top: 10px; 
-      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-      transition: transform 0.2s;
+      width: 100%; padding: 14px; background: var(--primary); 
+      color: white; border: none; border-radius: 12px; 
+      font-weight: 600; cursor: pointer; transition: 0.3s;
+      box-shadow: 0 8px 15px -5px rgba(37, 99, 235, 0.4);
     }
 
-    .btn:active { transform: scale(0.98); }
-
-    .table-container { 
-      max-height: 350px; 
-      overflow-y: auto; 
-      margin-top: 10px; 
-      border-radius: 12px; 
-      border: 1px solid #e2e8f0; 
-    }
-
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: #f8fafc; padding: 12px; text-align: left; position: sticky; top: 0; color: #64748b; }
-    td { padding: 12px; border-top: 1px solid #e2e8f0; text-align: left; }
-    
-    /* Search Bar in Database */
-    #search-box {
-      width: 100%;
+    .btn-export {
+      background: var(--success);
+      box-shadow: 0 8px 15px -5px rgba(34, 197, 94, 0.4);
+      margin-top: 10px;
+      font-size: 12px;
       padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
     }
+
+    /* Dashboard Styling */
+    .filter-group { display: flex; gap: 8px; margin-bottom: 15px; }
+    
+    .table-container { 
+      max-height: 350px; overflow-y: auto; 
+      border-radius: 12px; border: 1px solid var(--border); 
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { background: #f8fafc; padding: 12px; text-align: left; position: sticky; top: 0; z-index: 10; color: #64748b; border-bottom: 2px solid var(--border); }
+    td { padding: 10px 12px; border-top: 1px solid #f1f5f9; text-align: left; }
+    
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: 600; }
+    .badge-x { background: #dcfce7; color: #166534; }
+    .badge-xi { background: #dbeafe; color: #1e40af; }
+    .badge-xii { background: #fef3c7; color: #92400e; }
+
+    #search-box { flex: 2; }
+    #filter-kelas { flex: 1; }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <!-- Logo Section -->
   <div class="logo-wrapper">
     <img src="https://image2url.com/r2/default/images/1772620964950-3eeff6f7-9c01-4aee-8c14-0d90f419c25f.png" 
-         onerror="this.src='https://ui-avatars.com/api/?name=TB&background=000&color=fff'" 
-         alt="Logo SMK Taruna Bangsa">
+         onerror="this.src='https://ui-avatars.com/api/?name=TB&background=000&color=fff'" alt="Logo">
   </div>
 
   <h2>SMK TARUNA BANGSA</h2>
-  <span class="sub-title">Sistem Registrasi & Presensi Terpadu</span>
+  <span class="sub-title">Portal Registrasi & Dashboard Admin</span>
 
   <div class="nav">
     <button id="t1" class="active" onclick="tab('in')">REGISTRASI</button>
-    <button id="t2" onclick="tab('ad')">DATA SISWA</button>
+    <button id="t2" onclick="cekAkses()">DATA SISWA</button>
   </div>
 
-  <!-- Form Section -->
+  <!-- Form Registrasi -->
   <div id="p-in">
     <div class="form-group">
-      <label>NISN / ID SISWA</label>
-      <input type="text" id="id" placeholder="Contoh: 202611001">
+      <label>NISN</label>
+      <input type="number" id="id" placeholder="Masukkan NISN">
     </div>
     <div class="form-group">
       <label>NAMA LENGKAP</label>
-      <input type="text" id="nama" placeholder="Masukkan nama sesuai ijazah">
+      <input type="text" id="nama" placeholder="Sesuai Ijazah">
     </div>
     <div class="form-group">
-      <label>KELAS</label>
+      <label>KELAS & JURUSAN</label>
       <select id="kelas">
-        <option value="X-RPL">X - Rekayasa Perangkat Lunak</option>
-        <option value="XI-RPL">XI - Rekayasa Perangkat Lunak</option>
-        <option value="XII-RPL">XII - Rekayasa Perangkat Lunak</option>
+        <optgroup label="KELAS X">
+          <option value="X-1">X - 1</option><option value="X-2">X - 2</option>
+          <option value="X-3">X - 3</option><option value="X-4">X - 4</option>
+          <option value="X-5">X - 5</option><option value="X-6">X - 6</option>
+        </optgroup>
+        <optgroup label="KELAS XI">
+          <option value="XI-1">XI - 1</option><option value="XI-2">XI - 2</option>
+          <option value="XI-3">XI - 3</option><option value="XI-4">XI - 4</option>
+          <option value="XI-5">XI - 5</option><option value="XI-6">XI - 6</option>
+        </optgroup>
+        <optgroup label="KELAS XII">
+          <option value="XII-1">XII - 1</option><option value="XII-2">XII - 2</option>
+          <option value="XII-3">XII - 3</option><option value="XII-4">XII - 4</option>
+          <option value="XII-5">XII - 5</option><option value="XII-6">XII - 6</option>
+        </optgroup>
       </select>
     </div>
     <div class="form-group">
-      <label>EMAIL AKTIF</label>
+      <label>EMAIL</label>
       <input type="email" id="email" placeholder="siswa@gmail.com">
     </div>
     <button class="btn" onclick="simpan()">DAFTAR SEKARANG</button>
   </div>
 
-  <!-- Database Section -->
+  <!-- Dashboard Admin -->
   <div id="p-ad" style="display:none;">
-    <input type="text" id="search-box" placeholder="Cari nama atau NISN..." onkeyup="filterTabel()">
+    <div class="stat-row">
+      <div class="stat-box"><span>Kelas X</span><b id="count-x">0</b></div>
+      <div class="stat-box"><span>Kelas XI</span><b id="count-xi">0</b></div>
+      <div class="stat-box"><span>Kelas XII</span><b id="count-xii">0</b></div>
+    </div>
+
+    <div class="filter-group">
+      <input type="text" id="search-box" placeholder="Cari..." onkeyup="filterTabel()">
+      <select id="filter-kelas" onchange="filterTabel()">
+        <option value="SEMUA">SEMUA</option>
+        <option value="X-">KELAS X</option>
+        <option value="XI-">KELAS XI</option>
+        <option value="XII-">KELAS XII</option>
+      </select>
+    </div>
+
     <div class="table-container">
       <table>
         <thead>
@@ -195,20 +208,37 @@
         <tbody id="list"></tbody>
       </table>
     </div>
+    
+    <button class="btn btn-export" onclick="exportKeExcel()">📥 DOWNLOAD DATA EXCEL</button>
+    <p id="counter" style="font-size: 10px; margin-top: 10px; color: #64748b; text-align: right;"></p>
   </div>
 </div>
 
 <script>
-  // Fungsi Tab Switcher
+  let terautentikasi = false;
+  let masterData = [];
+
+  async function cekAkses() {
+    if(terautentikasi) return tab('ad');
+    const { value: password } = await Swal.fire({
+      title: 'Admin Only',
+      input: 'password',
+      inputPlaceholder: 'Password...',
+      showCancelButton: true,
+      confirmButtonColor: '#2563eb'
+    });
+    if (password === 'TB original 123') { terautentikasi = true; tab('ad'); }
+    else if (password) { Swal.fire('Error', 'Password Salah!', 'error'); }
+  }
+
   function tab(t) {
     document.getElementById('p-in').style.display = t === 'in' ? 'block' : 'none';
     document.getElementById('p-ad').style.display = t === 'ad' ? 'block' : 'none';
     document.getElementById('t1').className = t === 'in' ? 'active' : '';
     document.getElementById('t2').className = t === 'ad' ? 'active' : '';
-    if(t === 'ad') muat();
+    if(t === 'ad') muatData();
   }
 
-  // Simpan Data Siswa
   function simpan() {
     const data = { 
       id: document.getElementById('id').value.trim(), 
@@ -216,47 +246,69 @@
       kelas: document.getElementById('kelas').value, 
       email: document.getElementById('email').value.trim() 
     };
-
-    if(!data.id || !data.nama || !data.email) {
-      return Swal.fire('Peringatan', 'Mohon isi semua data dengan benar!', 'warning');
-    }
-
-    Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-    
+    if(!data.id || !data.nama || !data.email) return Swal.fire('Oops', 'Isi semua data ya!', 'warning');
+    Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading() });
     google.script.run.withSuccessHandler(res => {
       if(res.error) return Swal.fire('Gagal', res.pesan, 'error');
-      Swal.fire('Berhasil', `Siswa ${res.nama} telah terdaftar!`, 'success');
+      Swal.fire('Berhasil!', `Data ${res.nama} terdaftar.`, 'success');
       ['id','nama','email'].forEach(i => document.getElementById(i).value = "");
     }).simpanSiswa(data.id, data.nama, data.kelas, data.email);
   }
 
-  // Load Data Siswa
-  function muat() {
-    document.getElementById('list').innerHTML = "<tr><td colspan='3' style='text-align:center'>Memuat data...</td></tr>";
+  function muatData() {
     google.script.run.withSuccessHandler(data => {
-      window.masterData = data; // Simpan untuk filter
+      masterData = data; 
+      updateStats(data);
       renderTabel(data);
     }).ambilDataSiswa();
   }
 
-  // Render Tabel
-  function renderTabel(data) {
-    let h = "";
+  function updateStats(data) {
+    const counts = { x: 0, xi: 0, xii: 0 };
     data.forEach(r => {
-      h += `<tr><td><code>${r[0]}</code></td><td><b>${r[1]}</b></td><td>${r[2]}</td></tr>`;
+      const cls = r[2].toString().toUpperCase();
+      if(cls.startsWith('X-')) counts.x++;
+      else if(cls.startsWith('XI-')) counts.xi++;
+      else if(cls.startsWith('XII-')) counts.xii++;
     });
-    document.getElementById('list').innerHTML = h || "<tr><td colspan='3' style='text-align:center'>Data Kosong</td></tr>";
+    document.getElementById('count-x').innerText = counts.x;
+    document.getElementById('count-xi').innerText = counts.xi;
+    document.getElementById('count-xii').innerText = counts.xii;
   }
 
-  // Filter Pencarian
+  function renderTabel(data) {
+    let html = data.map(r => {
+      let cls = r[2].toString().toLowerCase();
+      let badge = cls.includes('xii') ? "badge-xii" : (cls.includes('xi') ? "badge-xi" : "badge-x");
+      return `<tr>
+        <td><code>${r[0]}</code></td>
+        <td style="text-transform:uppercase;"><b>${r[1]}</b></td>
+        <td><span class="badge ${badge}">${r[2]}</span></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('list').innerHTML = html || "<tr><td colspan='3' style='text-align:center;'>Kosong</td></tr>";
+    document.getElementById('counter').innerText = `Total: ${data.length} Siswa Terdaftar`;
+  }
+
   function filterTabel() {
-    const val = document.getElementById('search-box').value.toLowerCase();
-    if(!window.masterData) return;
-    const filtered = window.masterData.filter(r => 
-      r[0].toString().toLowerCase().includes(val) || 
-      r[1].toString().toLowerCase().includes(val)
-    );
+    const searchVal = document.getElementById('search-box').value.toLowerCase();
+    const classVal = document.getElementById('filter-kelas').value;
+    const filtered = masterData.filter(r => {
+      const matchSearch = r[1].toLowerCase().includes(searchVal) || r[0].toString().includes(searchVal);
+      const matchClass = classVal === "SEMUA" || r[2].toString().startsWith(classVal);
+      return matchSearch && matchClass;
+    });
     renderTabel(filtered);
+  }
+
+  function exportKeExcel() {
+    if(masterData.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk di-export', 'info');
+    const ws = XLSX.utils.json_to_sheet(masterData.map(r => ({
+      "NISN": r[0], "Nama Siswa": r[1], "Kelas": r[2], "Email": r[3]
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Siswa");
+    XLSX.writeFile(wb, "Data_Siswa_SMK_TB.xlsx");
   }
 </script>
 </body>
