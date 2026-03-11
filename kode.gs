@@ -33,7 +33,11 @@ function verifyAdminPassword(password) {
 }
 
 function getAdminPassword_() {
-  return PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
+  var adminPassword = PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD");
+  if (adminPassword && adminPassword.toString().trim()) {
+    return adminPassword.toString().trim();
+  }
+  return "tbsuka";
 }
 
 function isAdminTokenValid_(token) {

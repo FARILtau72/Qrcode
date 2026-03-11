@@ -118,7 +118,7 @@ Digunakan untuk mencatat riwayat kehadiran harian.
 <li>Klik menu <b>Extensions</b> > <b>Apps Script</b>.</li>
 <li>Salin kode dari <code>Code.gs</code> ke editor.</li>
 <li>Buat file HTML baru bernama <code>Index.html</code> dan salin kodenya.</li>
-<li>Buka <b>Project Settings</b> di Apps Script dan isi Script Properties dengan key <code>ADMIN_PASSWORD</code> (password admin).</li>
+<li>Buka <b>Project Settings</b> di Apps Script dan isi Script Properties dengan key <code>ADMIN_PASSWORD</code> (password admin). Jika belum diisi, password default adalah <b>tbsuka</b>. Untuk mengganti password, ubah nilai <code>ADMIN_PASSWORD</code> di Script Properties.</li>
 <li>Klik <b>Deploy</b> > <b>New Deployment</b>.</li>
 <li>Pilih <b>Web App</b>, Execute as: <b>Me</b>, Access: <b>Anyone</b>.</li>
 <li>Salin link Web App dan sebarkan ke siswa.</li>
